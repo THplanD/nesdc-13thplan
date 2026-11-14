@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ดาวน์โหลด CSV แผนพัฒนาฯ ฉบับที่ 13</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap');
+:root{font-family:'Noto Sans Thai',Tahoma,Arial,sans-serif;color:#092838;background:#f3f7f9}*{box-sizing:border-box}body{margin:0}.cards{max-width:1280px;padding:16px;margin:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{border:1px solid #d6e3eb;background:#fff;border-radius:17px;min-height:205px;padding:20px;display:flex;flex-direction:column;gap:14px}.head{display:flex;justify-content:space-between;gap:10px;align-items:center}.tag{padding:7px 11px;background:#eaf5f7;color:#007887;border-radius:8px;font-weight:800;font-size:12px;white-space:nowrap}.status{padding:6px 10px;border-radius:99px;background:#f0f4f7;color:#718499;font-size:11px;font-weight:700;text-align:right}.status.ready{background:#ddf8ef;color:#08735f}.name{font-size:14px;line-height:1.8;font-weight:700;margin:0;flex:1}.buttons{display:flex;gap:8px;flex-wrap:wrap}.btn{border:0;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;border-radius:9px;padding:10px 14px;font-size:12px;font-weight:800;min-height:40px;cursor:pointer;font-family:inherit;background:#eaf3f6;color:#00617e}.btn.primary{background:#078985;color:#fff}.btn:disabled{background:#e7edf1;color:#9bacbe;cursor:not-allowed}.btn:hover:not(:disabled){filter:brightness(.95)}@media(max-width:750px){.cards{grid-template-columns:1fr;padding:12px}.card{min-height:194px;padding:16px}}
+</style></head><body><main class="cards" id="cards" aria-label="รายการดาวน์โหลด CSV 13 หมุดหมาย"></main>
+<script>
+const titles=["ไทยเป็นประเทศชั้นนำด้านสินค้าเกษตรและเกษตรแปรรูปมูลค่าสูง", "ไทยเป็นจุดหมายของการท่องเที่ยวที่เน้นคุณภาพและความยั่งยืน", "ไทยเป็นฐานการผลิตยานยนต์ไฟฟ้าที่สำคัญของโลก", "ไทยเป็นศูนย์กลางทางการแพทย์และสุขภาพมูลค่าสูง", "ไทยเป็นประตูการค้าการลงทุนและยุทธศาสตร์ทางโลจิสติกส์ที่สำคัญของภูมิภาค", "ไทยเป็นศูนย์กลางอุตสาหกรรมอิเล็กทรอนิกส์อัจฉริยะและอุตสาหกรรมดิจิทัลของอาเซียน", "ไทยมีวิสาหกิจขนาดกลางและขนาดย่อมที่เข้มแข็ง มีศักยภาพสูง และสามารถแข่งขันได้", "ไทยมีพื้นที่และเมืองอัจฉริยะที่น่าอยู่ ปลอดภัย เติบโตได้อย่างยั่งยืน", "ไทยมีความยากจนข้ามรุ่นลดลงและมีความคุ้มครองทางสังคมที่เพียงพอ เหมาะสม", "ไทยมีเศรษฐกิจหมุนเวียนและสังคมคาร์บอนต่ำ", "ไทยสามารถลดความเสี่ยงและผลกระทบจากภัยธรรมชาติและการเปลี่ยนแปลงสภาพภูมิอากาศ", "ไทยมีกำลังคนสมรรถนะสูง มุ่งเรียนรู้อย่างต่อเนื่อง ตอบโจทย์ การพัฒนาแห่งอนาคต", "ไทยมีภาครัฐที่ทันสมัย มีประสิทธิภาพ และตอบโจทย์ประชาชน"];
+const container=document.getElementById('cards');
+const escapeHTML=(s)=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cards=titles.map((title,i)=>{const n=i+1;const card=document.createElement('section');card.className='card';card.innerHTML=`<div class="head"><span class="tag">หมุดหมายที่ ${n}</span><span class="status" id="status-${n}">กำลังตรวจสอบไฟล์...</span></div><h2 class="name">${escapeHTML(title)}</h2><div class="buttons"><button class="btn" id="dl-${n}" disabled>↓ กำลังตรวจสอบ</button><a class="btn" href="https://13thplan-nesdc.vercel.app/?milestone=${n}" target="_blank" rel="noopener noreferrer">เปิดต้นทาง ↗</a></div>`;container.appendChild(card);return card});
+async function check(n){
+ const filename=`dashboard-data-milestone-${n}.csv`,url=`csv/${filename}`;
+ const status=document.getElementById(`status-${n}`),btn=document.getElementById(`dl-${n}`);
+ try{
+   // Check actual file availability; missing milestones remain visibly unavailable, never falsely report connected.
+   const r=await fetch(url,{method:'HEAD',cache:'no-store'});
+   if(!r.ok)throw Error(String(r.status));
+   status.textContent='มีข้อมูล CSV';status.classList.add('ready');btn.disabled=false;btn.classList.add('primary');btn.textContent='↓ ดาวน์โหลด CSV';
+   btn.addEventListener('click',()=>{const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove()});
+ }catch(e){status.textContent='ยังไม่มีไฟล์จากต้นทาง';btn.textContent='↓ ยังไม่พร้อม';}
+}
+// Works on GitHub Pages or any static host after automated CSV sync commits the actual files.
+Promise.all(titles.map((_,i)=>check(i+1)));
+</script></body></html>
